@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     
     Eigen::MatrixXd origV;
     Eigen::MatrixXi F;
-    if (!igl::readOBJ("bunny.obj", origV, F))
+    if (!igl::readOBJ("../example/bunny.obj", origV, F))
     {
         std::cerr << "Could not read example bunny.obj file" << std::endl;
         return -1;
