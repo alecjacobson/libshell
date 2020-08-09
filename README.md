@@ -28,6 +28,8 @@ For more details see:
 
 Both a St. Venant-Kirchhoff and Neo-Hookean material model are implemented; you select these independently of the second fundamental form discretization by passing in a `MaterialModel` to the elastic energy computation. Each material model assumes uniform Lamé parameters over the entire surface (but you can specify different thicknesses for each triangle). 
 
+Also implemented is a tension-field version of the St. Venant-Kirchhoff material. This material resists tension only (and not compression or bending).
+
 See the example program for the formulas that convert Young's modulus and Poisson's ratio to Lamé parameters. Note that the 2D formulas are *not* the same as the 3D ones found on e.g. Wikipedia.
 
 ## Compile
@@ -39,7 +41,10 @@ Compile this project using the standard cmake routine:
     cmake ..
     make
 
-This procedure will build both the library and an example program, which performs a few iterations of a static solve on an rest-flat bunny mesh.
+This procedure will build:
+ - the library itself;
+ - an example program, which performs a few iterations of a static solve on an rest-flat bunny mesh;
+ - a testing program, used to verify the correctness of the energies and derivatives.
 
 ## Dependencies
 
@@ -48,3 +53,9 @@ The library itself depends only on Eigen (set the environment variable `EIGEN3_I
 ## Compiling on Windows
 
 Due to poor interoperation of the Eigen library with the MSVC compiler, Release mode compilation of the derivative code on Windows can take forever (over 8 hours). To solve this issue add EIGEN_STRONG_INLINE=inline to your preprocessor macros when building libshell.
+
+## Testing Program
+
+I've included code in tests/ that performs sanity-checking on the shell energy implementation. In particular, the program performs and reports information on the following tests:
+1. All implemented analytic derivatives and Hessians are checked against the corresponding energy and derivative (respectively) using centered finite differences.
+2. All (consitutive model, second fundamental form) pairs are checked against each other for consistency in the infinitesimal-strain regime about the flat rest state (i.e. that their Hessians all agree at this point).

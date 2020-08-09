@@ -9,6 +9,7 @@
 #include "../include/MidedgeAngleSinFormulation.h"
 #include "../include/MidedgeAverageFormulation.h"
 #include "../include/StVKMaterial.h"
+#include "../include/TensionFieldStVKMaterial.h"
 #include "../include/NeoHookeanMaterial.h"
 
 int numSteps;
@@ -64,6 +65,9 @@ void runSimulation(igl::opengl::glfw::Viewer &viewer,
     case 1:
         mat = new StVKMaterial<SFF>(lameAlpha, lameBeta);
         break;
+    case 2:
+        mat = new TensionFieldStVKMaterial<SFF>(lameAlpha, lameBeta);
+        break;
     default:
         assert(false);
     }
@@ -92,7 +96,20 @@ int main(int argc, char *argv[])
     
     Eigen::MatrixXd origV;
     Eigen::MatrixXi F;
-    if (!igl::readOBJ("../example/bunny.obj", origV, F))
+
+    std::vector<std::string> prefixes = { "./", "./example/", "../", "../example/" };
+
+    bool found = false;
+    for (auto& it : prefixes)
+    {
+        std::string fname = it + std::string("bunny.obj");
+        if (igl::readOBJ(fname, origV, F))
+        {
+            found = true;
+            break;            
+        }
+    }
+    if (!found)
     {
         std::cerr << "Could not read example bunny.obj file" << std::endl;
         return -1;
